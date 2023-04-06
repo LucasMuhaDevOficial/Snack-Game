@@ -1,0 +1,149 @@
+var canvas = document.getElementById("snakeCanvas");
+var ctx = canvas.getContext("2d");
+
+var blockSize = 10;
+var snake = [
+  {x: 0, y: 0},
+  {x: blockSize, y: 0},
+  {x: blockSize * 2, y: 0}
+];
+var food = {};
+var direction = "right";
+
+function drawBlock(ctx, position) {
+  var x = position.x * blockSize;
+  var y = position.y * blockSize;
+  ctx.fillRect(x, y, blockSize, blockSize);
+}
+
+function drawSnake(ctx) {
+  ctx.fillStyle = "green";
+  snake.forEach(function(position) {
+    drawBlock(ctx, position);
+  });
+}
+
+function drawFood(ctx) {
+  ctx.fillStyle = "red";
+  drawBlock(ctx, food);
+}
+
+function moveSnake() {
+  var head = {x: snake[0].x, y: snake[0].y};
+
+  switch(direction) {
+    case "down":
+      head.y += blockSize;
+      break;
+    case "up":
+      head.y -= blockSize;
+      break;
+    case "right":
+      head.x += blockSize;
+      break;
+    case "left":
+      head.x -= blockSize;
+      break;
+  }
+
+  snake.unshift(head);
+
+  if(snake[0].x === food.x && snake[0].y === food.y) {
+    generateFood();
+  } else {
+    snake.pop();
+  }
+}
+
+function generateFood() {
+  food.x = Math.floor(Math.random() * (canvas.width / blockSize)) * blockSize;
+  food.y = Math.floor(Math.random() * (canvas.height / blockSize)) * blockSize;
+}
+
+function changeDirection(event) {
+  var keys = {
+    37: "left",
+    38: "up",
+    39: "right",
+    40: "down"
+  };
+  if(event.keyCode in keys) {
+    direction = keys[event.keyCode];
+  }
+}
+
+document.addEventListener("keydown", changeDirection);
+
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  drawSnake(ctx);
+  drawFood(ctx);
+
+  moveSnake();
+
+  setTimeout(gameLoop, 100);
+}
+
+generateFood();
+
+gameLoop();
+// Definindo as variáveis
+var tabuleiro = document.getElementById("tabuleiro");
+var celulas = [];
+var cabeca = {x: 10, y: 10};
+var corpo = [{x: 9, y: 10}, {x: 8, y: 10}];
+var direcao = "direita";
+var comida = {x: 5, y: 5};
+
+// Criando as células do tabuleiro
+for (var i = 0; i < 20; i++) {
+  celulas[i] = [];
+  for (var j = 0; j < 20; j++) {
+    var celula = document.createElement("div");
+    celula.classList.add("celula");
+    celula.id = "celula_" + i + "_" + j;
+    tabuleiro.appendChild(celula);
+    celulas[i][j] = celula;
+  }
+}
+
+// Desenhando a cobra no tabuleiro
+function desenharCobra() {
+  // Desenha a cabeça
+  celulas[cabeca.x][cabeca.y].classList.add("cabeca");
+  // Desenha o corpo
+  for (var i = 0; i < corpo.length; i++) {
+    celulas[corpo[i].x][corpo[i].y].classList.add("corpo");
+  }
+}
+
+// Apagando a cobra do tabuleiro
+function apagarCobra() {
+  // Apaga a cabeça
+  celulas[cabeca.x][cabeca.y].classList.remove("cabeca");
+  // Apaga o corpo
+  for (var i = 0; i < corpo.length; i++) {
+    celulas[corpo[i].x][corpo[i].y].classList.remove("corpo");
+  }
+}
+
+// Movendo a cobra
+function moverCobra() {
+  // Atualiza a posição da cabeça
+  switch (direcao) {
+    case "cima":
+      cabeca.x--;
+      break;
+    case "baixo":
+      cabeca.x++;
+      break;
+    case "esquerda":
+      cabeca.y--;
+      break;
+    case "direita":
+      cabeca.y++;
+      break;
+  }
+  // Verifica se a cobra comeu a comida
+  if (cabeca.x == comida.x && cabeca.y == comida.y)
